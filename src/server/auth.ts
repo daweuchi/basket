@@ -59,9 +59,16 @@ export function newId(): string {
 
 export function newInviteCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  const bytes = randomBytes(8);
+  const limit = 256 - (256 % chars.length);
   let s = "";
-  for (const b of bytes) s += chars[b % chars.length];
+  while (s.length < 8) {
+    const bytes = randomBytes(8);
+    for (const b of bytes) {
+      if (b >= limit) continue;
+      s += chars[b % chars.length];
+      if (s.length === 8) break;
+    }
+  }
   return s;
 }
 

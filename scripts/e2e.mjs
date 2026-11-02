@@ -81,8 +81,16 @@ try {
   if (remindTitle !== "Remind") throw new Error(`expected Remind sheet, got ${remindTitle}`);
   await alex.waitForSelector(".cal-row");
   const calLinks = await alex.$$eval(".cal-row a", (els) => els.map((a) => a.getAttribute("href")));
-  if (!calLinks.some((h) => h && h.includes("calendar.google.com"))) throw new Error("missing Google Calendar link");
-  if (!calLinks.some((h) => h && h.includes("outlook.live.com"))) throw new Error("missing Outlook link");
+  const hasHost = (host) =>
+    calLinks.some((h) => {
+      try {
+        return new URL(h).hostname === host;
+      } catch {
+        return false;
+      }
+    });
+  if (!hasHost("calendar.google.com")) throw new Error("missing Google Calendar link");
+  if (!hasHost("outlook.live.com")) throw new Error("missing Outlook link");
   await Promise.all([
     alex.waitForFunction(() => [...document.querySelectorAll(".toast")].some((n) => n.textContent.includes("Nudge sent"))),
     alex.click('button[data-action="nudge"]'),
