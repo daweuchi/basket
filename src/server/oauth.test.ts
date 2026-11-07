@@ -152,7 +152,7 @@ describe("oauth", { concurrency: 1 }, () => {
       body: { provider: "google", mode: "create", householdName: "Flat 1", displayName: "Alex" },
       cookies: false,
     })).json as { url: string };
-    assert.ok(started.url.includes("accounts.google.com"));
+    assert.equal(new URL(started.url).hostname, "accounts.google.com");
 
     const cb = await app.request(`/api/auth/oauth/callback?code=code1&state=${stateFromAuthorizeUrl(started.url)}`, {
       headers: { cookie: "" },

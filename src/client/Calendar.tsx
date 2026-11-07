@@ -30,13 +30,29 @@ function fmtTime(ts: number, lang: string): string {
   });
 }
 
+const EMBED_HOSTS = new Set(["calendar.google.com", "outlook.live.com", "outlook.office365.com"]);
+
+function sanitizeEmbedUrl(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed) return "";
+  let parsed: URL;
+  try {
+    parsed = new URL(trimmed);
+  } catch {
+    return "";
+  }
+  if (parsed.protocol !== "https:") return "";
+  if (!EMBED_HOSTS.has(parsed.hostname)) return "";
+  return parsed.href;
+}
+
 export function CalendarSection({ reminders, trips, onAgenda }: { reminders: Reminder[]; trips: Reminder[]; onAgenda: () => void }) {
   const { t, lang } = useT();
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth());
   const [selected, setSelected] = useState<number>(() => startOfDay(Date.now()));
-  const [embedUrl, setEmbedUrl] = useState(() => localStorage.getItem("basket-calendar-url") ?? "");
+  const [embedUrl, setEmbedUrl] = useState(() => sanitizeEmbedUrl(localStorage.getItem("basket-calendar-url") ?? ""));
   const [draft, setDraft] = useState(embedUrl);
   const [showEmbedForm, setShowEmbedForm] = useState(false);
 
@@ -88,10 +104,12 @@ export function CalendarSection({ reminders, trips, onAgenda }: { reminders: Rem
 
   function saveEmbed(e: React.FormEvent) {
     e.preventDefault();
-    const url = draft.trim();
-    if (url && !/^https:\/\//i.test(url)) return;
+    const raw = draft.trim();
+    if (raw && !sanitizeEmbedUrl(raw)) return;
+    const url = sanitizeEmbedUrl(raw);
     setEmbedUrl(url);
-    localStorage.setItem("basket-calendar-url", url);
+    if (url) localStorage.setItem("basket-calendar-url", url);
+    else localStorage.removeItem("basket-calendar-url");
     setShowEmbedForm(false);
   }
 

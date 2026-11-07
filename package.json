@@ -19,7 +19,7 @@
     "node": ">=22"
   },
   "dependencies": {
-    "@hono/node-server": "^1.19.0",
+    "@hono/node-server": "^2.1.5",
     "@libsql/client": "^0.15.9",
     "hono": "^4.13.16",
     "tsx": "^4.20.3"
@@ -31,12 +31,12 @@
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.0",
-    "concurrently": "^9.2.5",
-    "puppeteer-core": "^24.10.0",
+    "concurrently": "^10.0.6",
+    "puppeteer-core": "^25.16.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "typescript": "^5.9.2",
     "vite": "^7.3.7",
-    "wrangler": "^4.156.1"
+    "wrangler": "^4.28.0"
   }
 }
